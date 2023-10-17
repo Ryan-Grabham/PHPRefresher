@@ -8,14 +8,9 @@ $currentUserId = 4;
 
 $note = $db->query('select * from notes where id = :id', [
     'id' => $_GET['id']
-])->fetch();
+])->findOrFail();
 
-if (!$note) {
-    abort();
-}
+authorise($note['user_id'] === $currentUserId);
 
-if ($note['user_id'] != $currentUserId) {
-    abort(Response::FORBIDDEN);
-}
 
 require "views/note.view.php";
