@@ -1,22 +1,17 @@
 <?php
 
-require 'Validator.php';
+use Core\Database;
+use Core\Validator;
 
-$config = require 'config.php';
+$config = require base_path('config.php');
 $db = new Database($config['database']);
 
-$heading = 'Create a new note';
-
+$errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $errors = [];
-
     if (! Validator::string($_POST['body'], 1, 1000)) {
-        $errors['body'] = 'The note must be between 1 and 1000 characters long.';
+        $errors['body'] = 'A body of no more than 1,000 characters is required.';
     }
-
-
 
     if (empty($errors)) {
         $db->query('INSERT INTO notes(body, user_id) VALUES(:body, :user_id)', [
@@ -24,8 +19,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'user_id' => 4
         ]);
     }
-
-
 }
 
-require 'views/note-create.view.php';
+view("notes/create.view.php", [
+    'heading' => 'Create Note',
+    'errors' => $errors
+]);
